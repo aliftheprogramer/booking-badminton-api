@@ -42,7 +42,28 @@ const getHistoryByBooking = async (req, res) => {
   }
 };
 
-module.exports = { recordHistory, getMyHistory, getHistoryByBooking };
+// GET /api/history/item/:historyId - detail satu riwayat (admin atau pemilik)
+const getHistoryById = async (req, res) => {
+  try {
+    const { historyId } = req.params;
+    const item = await BookingHistory.findById(historyId)
+      .populate('user', 'nama no_hp')
+      .populate('booking', 'kode_booking tanggal_booking jam_mulai jam_selesai');
+
+    if (!item) return res.status(404).json({ message: 'History tidak ditemukan' });
+
+    // Jika bukan admin, hanya pemilik yang boleh melihat
+    if (req.user.role !== 'admin' && item.user && item.user._id && item.user._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to view this history' });
+    }
+
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error: ' + error.message });
+  }
+};
+
+module.exports = { recordHistory, getMyHistory, getHistoryByBooking, getHistoryById };
  
 // ========== ADMIN ENDPOINTS ==========
 // GET /api/history/admin/all
