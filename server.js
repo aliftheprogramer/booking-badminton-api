@@ -29,7 +29,7 @@ app.use('/api/lapangan', lapanganRoutes);
 app.use('/api/bookings', bookingsRoutes);
 app.use('/api/history', historyRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || '0.0.0.0';
 
 const displayHost = HOST === '0.0.0.0' ? 'localhost' : HOST;
